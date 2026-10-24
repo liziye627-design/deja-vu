@@ -1408,8 +1408,8 @@ func kimiAutoPreflight(exe string, uninstall bool) error {
 	if err != nil {
 		return err
 	}
-	if err := writableIfChanged(path, old, next); err != nil {
-		return err
+	if refusal := writableIfChanged(path, old, next); refusal != nil {
+		return refusal
 	}
 	// Not on the way out: uninstall runs the plain kimi target too, which
 	// removes mcp.json whatever this says.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -239,7 +240,7 @@ func TestKimiAutoPreflightChecksThePathTheWriterNames(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "read-only") {
 		t.Fatalf("install err = %v, want the read-only refusal", err)
 	}
-	if after, _ := os.ReadFile(cfg); string(after) != string(before) {
+	if after, _ := os.ReadFile(cfg); !bytes.Equal(after, before) {
 		t.Errorf("config.toml was rewritten by a refused target:\n%s\nwant:\n%s", after, before)
 	}
 }
