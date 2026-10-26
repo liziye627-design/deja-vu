@@ -7,12 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `deja mcp --context-search` serves Qwen Code's External Context MCP
+  Profile v1: one `context_search({query})` tool that answers from the local
+  index with at most five items in the profile's untrusted envelope, checked
+  against the profile's published schemas and test vectors. `deja mcp` itself
+  is unchanged. Register it with `qwen mcp add deja-context deja mcp
+  --context-search --timeout 8000 --include-tools context_search` (#5662).
+### Changed
+
+- The instructions, skills and extensions no longer tell the agent that a
+  recalled rule outranks its defaults. Recall is untrusted reference data from
+  past transcripts: the agent names the rule in one line and asks before it
+  changes a command, a file write or a config. The standing-decisions block
+  says the same (#5676).
+- The per-prompt line names the agent the memory came from and how long ago:
+  `deja-vu — from Codex CLI, 4 months ago: "<quote>" (via <terms>)`, where it
+  used to say only "you have been here" and a date. The gates are unchanged:
+  a confident match only, at most once in twenty minutes per session. The dsh
+  card and the OpenClaw chat line read both shapes (#5660).
+- A spawned subagent's instructions are no longer extended with recall, except
+  in Grok, whose main-thread hooks print to nobody. Over 60 days on one
+  machine, 1339 Claude Code subagents were handed a block and none used it,
+  and those blocks were 55% of all per-prompt recall. opencode task sessions
+  are not searched on their turns either, since the agent that wrote them had
+  the recall already (#5660).
+
 ### Fixed
 
+- opencode shows the per-prompt line. The plugins kept only the model's half
+  of the reply, so the line reached nobody while deja counted it shown and
+  held the next one back twenty minutes. opencode 1.x and Kilo now toast it.
+  The 2.x plugin has no channel to the TUI and asks deja `--strict`, so the
+  line and the session-start receipt stay unspent there (#5660).
 - A resumed Gemini CLI session no longer shows and indexes each tool result
   twice. Gemini writes the earlier function responses again under new message
   ids, and those are now dropped by call id. The index is rebuilt once on
   upgrade. From @adity982 (#5318, #5618).
+- Per-prompt recall no longer replaces the answer on small models. The block
+  ended with `If it helped, say: "déjà vu: ..."`, and qwen3:8b in dsh with
+  reasoning off replied with only that line in 10 of 10 runs. It now asks for
+  the answer first and the line last: 10 of 10 answered, 10 still credited
+  the recall (#5664).
 
 ## [0.23.1] - 2026-10-25
 
