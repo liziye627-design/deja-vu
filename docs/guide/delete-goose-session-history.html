@@ -27,7 +27,7 @@
 <link rel="apple-touch-icon" href="../assets/icon.svg">
 <link rel="sitemap" type="application/xml" href="https://vshulcz.github.io/deja-vu/sitemap.xml">
 <link rel="describedby" type="text/markdown" href="https://vshulcz.github.io/deja-vu/llms.txt">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Delete Goose session history","description":"Since goose 1.10.0 every session is a row in sessions.db. Remove one with goose session remove, clear the legacy JSONL files yourself, and know what is lost.","url":"https://vshulcz.github.io/deja-vu/guide/delete-goose-session-history.html","inLanguage":"en","author":{"@type":"Person","name":"vshulcz"},"publisher":{"@type":"Person","name":"vshulcz"},"datePublished":"2026-10-25","dateModified": "2026-10-25","isPartOf":{"@type":"WebSite","name":"deja-vu","url":"https://vshulcz.github.io/deja-vu/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Delete Goose session history","description":"Since goose 1.10.0 every session is a row in sessions.db. Remove one with goose session remove, clear the legacy JSONL files yourself, and know what is lost.","url":"https://vshulcz.github.io/deja-vu/guide/delete-goose-session-history.html","inLanguage":"en","author":{"@type":"Person","name":"vshulcz"},"publisher":{"@type":"Person","name":"vshulcz"},"datePublished":"2026-10-25","dateModified": "2026-10-26","isPartOf":{"@type":"WebSite","name":"deja-vu","url":"https://vshulcz.github.io/deja-vu/"}}</script>
 </head>
 <body>
 <div class="glow"></div>
@@ -161,8 +161,9 @@ goose session remove -r "project-.*"</pre>
 <p>Do not edit <code>sessions.db</code> by hand while goose is running. It is live state the client owns, and the messages belong to the session row by id.</p>
 
 <h2>How to delete all of it</h2>
-<p>With goose and goose Desktop closed, removing the database removes every session in it:</p>
-<pre>rm ~/.local/share/goose/sessions/sessions.db</pre>
+<p>With goose and goose Desktop closed, removing the database removes every session in it. goose opens it in WAL mode, so take the <code>-wal</code> and <code>-shm</code> files beside it too if they are there:</p>
+<pre>cd ~/.local/share/goose/sessions
+rm -f sessions.db sessions.db-wal sessions.db-shm</pre>
 <p>The legacy files are separate, because goose no longer manages them. Delete them yourself, one file per session or all at once:</p>
 <pre>rm ~/.local/share/goose/sessions/*.jsonl</pre>
 <p>Your extensions and settings live in the config directory (<code>~/.config/goose</code>), not here, so neither command touches them.</p>
